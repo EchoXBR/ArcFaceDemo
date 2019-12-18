@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.arcsoft.arcfacedemo.model.DrawInfo;
@@ -17,6 +18,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 用于显示人脸信息的控件
  */
 public class FaceRectView extends View {
+    private static final String TAG = "FaceRectView";
+
     private CopyOnWriteArrayList<DrawInfo> drawInfoList = new CopyOnWriteArrayList<>();
 
     // 画笔，复用
@@ -38,9 +41,12 @@ public class FaceRectView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (drawInfoList != null && drawInfoList.size() > 0) {
+            Log.d(TAG, "onDraw drawInfoList.size="+drawInfoList.size());
             for (int i = 0; i < drawInfoList.size(); i++) {
                 DrawHelper.drawFaceRect(canvas, drawInfoList.get(i), DEFAULT_FACE_RECT_THICKNESS, paint);
             }
+        }else{
+            Log.d(TAG, "onDraw drawInfoList.size="+drawInfoList.size());
         }
     }
 
@@ -56,6 +62,7 @@ public class FaceRectView extends View {
 
     public void addFaceInfo(List<DrawInfo> faceInfoList) {
         drawInfoList.addAll(faceInfoList);
+        Log.d(TAG, "drawInfoList.size="+drawInfoList.size());
         postInvalidate();
     }
 }

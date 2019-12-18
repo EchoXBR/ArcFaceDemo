@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class FaceHelper {
     /**
-     * "3264x2448","1920x1080","1280x720","640x480","1600x1200","2592x1944","3264x2448"]},{"index":2,"type":4,"default":1,"size":["640x480","320x180","320x240","424x240","640x360"]
+     * supportedSize:{"formats":[{"index":1,"type":6,"default":1,"size":["3264x2448","1920x1080","1280x720","640x480","1600x1200","2592x1944","3264x2448"]},{"index":2,"type":4,"default":1,"size":["640x480","320x180","320x240","424x240","640x360"]}]}
      */
     public static final int DEFAULT_PREVIEW_WIDTH = 640;
     public static final int DEFAULT_PREVIEW_HEIGHT = 480;
@@ -248,7 +248,7 @@ public class FaceHelper {
                 /*
                  * 若需要多人脸搜索，删除此行代码
                  */
-//                TrackUtil.keepMaxFace(faceInfoList);
+                TrackUtil.keepMaxFace(faceInfoList);
                 refreshTrackId(faceInfoList);
             }
             facePreviewInfoList.clear();

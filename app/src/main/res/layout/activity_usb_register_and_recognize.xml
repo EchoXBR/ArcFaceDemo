@@ -6,17 +6,17 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <com.arcsoft.arcfacedemo.widget.FaceRectView
             android:id="@+id/single_camera_face_rect_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_width="400dp"
+            android:layout_height="300dp" />
 
         <com.serenegiant.widget.UVCCameraTextureView
             android:id="@+id/camera_view_first"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_width="400dp"
+            android:layout_height="300dp" />
     </FrameLayout>
 
     <LinearLayout
@@ -41,6 +41,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:visibility="gone"
             android:focusable="false"
             android:hint="@string/input_name" />
 

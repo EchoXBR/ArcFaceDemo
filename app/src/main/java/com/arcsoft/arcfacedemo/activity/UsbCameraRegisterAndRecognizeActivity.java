@@ -1,15 +1,16 @@
 package com.arcsoft.arcfacedemo.activity;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.usb.UsbDevice;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +21,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -77,7 +77,8 @@ import static com.arcsoft.arcfacedemo.util.face.FaceHelper.DEFAULT_PREVIEW_HEIGH
 import static com.arcsoft.arcfacedemo.util.face.FaceHelper.DEFAULT_PREVIEW_WIDTH;
 
 
-public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity implements ViewTreeObserver.OnGlobalLayoutListener, CameraDialog.CameraDialogParent, View.OnLayoutChangeListener {
+//ViewTreeObserver.OnGlobalLayoutListener,
+public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity implements CameraDialog.CameraDialogParent {
 
     private static final String TAG = "UsbCameraAct";
     private static final int MAX_DETECT_NUM = 10;
@@ -118,6 +119,7 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
     private static final float[] BANDWIDTH_FACTORS = {0.5f, 0.5f};
     int previewCount = 0;
     EditText editName;
+    SurfaceTexture st;
     private DrawHelper drawHelper;
     /**
      * VIDEO模式人脸检测引擎，用于预览帧人脸追踪
@@ -269,6 +271,7 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
     private Switch switchLivenessDetect;
     private USBMonitor mUSBMonitor;
     private UVCCameraHandler mHandlerFirst;
+    private String TAG1 = "UVCCameraTextureView";
     /**
      * 监听USB
      */
@@ -390,21 +393,19 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
             }
         }
     };
-    //Activity最外层的Layout视图
-    private View activityRootView;
-    //屏幕高度
-    private int screenHeight = 0;
-    //软件盘弹起后所占高度阀值
-    private int keyHeight = 0;
 
     private void startPreview() {
-        final SurfaceTexture st = mUVCCameraViewFirst.getSurfaceTexture();
+        mUVCCameraViewFirst.onPause();
+        mUVCCameraViewFirst.onResume();
+        st = mUVCCameraViewFirst.getSurfaceTexture();
         mHandlerFirst.startPreview(new Surface(st));
+        Log.i(TAG1, "mUVCCameraViewFirst.getSurfaceTexture()" + st);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "life=====onCreate======");
         setContentView(R.layout.activity_usb_register_and_recognize);
         //保持亮屏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -427,13 +428,24 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
     @Override
     protected void onResume() {
         super.onResume();
-        //添加layout大小发生改变监听器
-        activityRootView.addOnLayoutChangeListener(this);
+        Log.i(TAG, "life=====onResume======");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "life=====onPause======");
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        Log.i(TAG, "life=====onStart======");
+
+        start();
+    }
+
+    private void start() {
         mUSBMonitor.register();
         if (mUVCCameraViewFirst != null) {
             mUVCCameraViewFirst.onResume();
@@ -442,6 +454,13 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
 
     @Override
     protected void onStop() {
+        Log.i(TAG, "life=====onStop======");
+        stop();
+        super.onStop();
+
+    }
+
+    private void stop() {
         mHandlerFirst.close();
         if (mUVCCameraViewFirst != null) {
             mUVCCameraViewFirst.onPause();
@@ -449,8 +468,6 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
         if (mUSBMonitor != null) {
             mUSBMonitor.unregister();//usb管理器解绑
         }
-        super.onStop();
-
     }
 
     private void initCamera() {
@@ -461,7 +478,7 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
         //设置显示宽高
         mUVCCameraViewFirst.setAspectRatio(faceRectView.getWidth() / (float) faceRectView.getHeight());
         mHandlerFirst = UVCCameraHandler.createHandler(this, mUVCCameraViewFirst
-                , 2, DEFAULT_PREVIEW_WIDTH, DEFAULT_PREVIEW_HEIGHT, UVCCamera.FRAME_FORMAT_YUYV
+                , 1, DEFAULT_PREVIEW_WIDTH, DEFAULT_PREVIEW_HEIGHT, UVCCamera.FRAME_FORMAT_MJPEG
                 , BANDWIDTH_FACTORS[0], firstDataCallBack);
 
         mHandlerFirst.addCallback(new UVCCameraHandler.CameraCallback() {
@@ -482,7 +499,7 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
 
             @Override
             public void onStopPreview() {
-                startPreview();
+
             }
 
             @Override
@@ -505,7 +522,7 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
     }
 
     private void initView() {
-        activityRootView = findViewById(R.id.root_layout);
+        //        activityRootView = findViewById(R.id.root_layout);
         mUVCCameraViewFirst = findViewById(R.id.camera_view_first);
         faceRectView = findViewById(R.id.single_camera_face_rect_view);
         switchLivenessDetect = findViewById(R.id.single_camera_switch_liveness_detect);
@@ -527,10 +544,6 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
         recyclerShowFaceInfo.setLayoutManager(new GridLayoutManager(this, spanCount));
         recyclerShowFaceInfo.setItemAnimator(new DefaultItemAnimator());
 
-        //获取屏幕高度
-        screenHeight = this.getWindowManager().getDefaultDisplay().getHeight();
-        //阀值设置为屏幕高度的1/3
-        keyHeight = screenHeight / 3;
 
     }
 
@@ -599,6 +612,7 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
 
     @Override
     protected void onDestroy() {
+        Log.i(TAG, "life=====onDestroy======");
 
         unInitEngine();
         if (faceHelper != null) {
@@ -713,12 +727,12 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
             String name = faceHelper.getName(facePreviewInfoList.get(i).getTrackId());
             Integer liveness = livenessMap.get(facePreviewInfoList.get(i).getTrackId());
             Integer recognizeStatus = requestFeatureStatusMap.get(facePreviewInfoList.get(i).getTrackId());
-            Log.i(TAG, "name: " + name + " liveness " + liveness + " recognizeStatus " + recognizeStatus);
+            //            Log.i(TAG, "name: " + name + " liveness " + liveness + " recognizeStatus " + recognizeStatus);
             // 根据识别结果和活体结果设置颜色
             int color = RecognizeColor.COLOR_UNKNOWN;
             if (recognizeStatus != null) {
                 if (recognizeStatus == RequestFeatureStatus.FAILED) {
-                    color = RecognizeColor.COLOR_FAILED;
+
                 }
                 if (recognizeStatus == RequestFeatureStatus.SUCCEED) {
                     color = RecognizeColor.COLOR_SUCCESS;
@@ -728,9 +742,15 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
                 color = RecognizeColor.COLOR_FAILED;
             }
 
-            drawInfoList.add(new DrawInfo(drawHelper.adjustRect(facePreviewInfoList.get(i).getFaceInfo().getRect()),
-                    GenderInfo.UNKNOWN, AgeInfo.UNKNOWN_AGE, liveness == null ? LivenessInfo.UNKNOWN : liveness, color,
-                    name == null ? String.valueOf(facePreviewInfoList.get(i).getTrackId()) : name));
+            Rect rect = facePreviewInfoList.get(i).getFaceInfo().getRect();
+            if (rect != null) {
+                drawInfoList.add(new DrawInfo(drawHelper.adjustRect(rect),
+                        GenderInfo.UNKNOWN, AgeInfo.UNKNOWN_AGE, liveness == null ? LivenessInfo.UNKNOWN : liveness, color,
+                        name == null ? String.valueOf(facePreviewInfoList.get(i).getTrackId()) : name));
+            } else {
+                Log.e(TAG, "rect = null");
+
+            }
         }
         drawHelper.draw(faceRectView, drawInfoList);
     }
@@ -900,15 +920,15 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
     /**
      * 在{@link #}第一次布局完成后，去除该监听，并且进行引擎和相机的初始化
      */
-    @Override
-    public void onGlobalLayout() {
-        if (!checkPermissions(NEEDED_PERMISSIONS)) {
-            ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
-        } else {
-            initEngine();
-            initCamera();
-        }
-    }
+    //    @Override
+    //    public void onGlobalLayout() {
+    //        if (!checkPermissions(NEEDED_PERMISSIONS)) {
+    //            ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
+    //        } else {
+    //            initEngine();
+    //            initCamera();
+    //        }
+    //    }
 
     /**
      * 将map中key对应的value增1回传
@@ -1022,21 +1042,5 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
         }
     }
 
-    @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-        //old是改变前的左上右下坐标点值，没有old的是改变后的左上右下坐标点值
-        //        System.out.println(oldLeft + " " + oldTop +" " + oldRight + " " + oldBottom);
-        //        System.out.println(left + " " + top +" " + right + " " + bottom);
-        //现在认为只要控件将Activity向上推的高度超过了1/3屏幕高，就认为软键盘弹起
-        if (oldBottom != 0 && bottom != 0 && (oldBottom - bottom > keyHeight)) {
 
-            Toast.makeText(this, "监听到软键盘弹起...", Toast.LENGTH_SHORT).show();
-
-
-        } else if (oldBottom != 0 && bottom != 0 && (bottom - oldBottom > keyHeight)) {
-            Toast.makeText(this, "监听到软件盘关闭...", Toast.LENGTH_SHORT).show();
-            startPreview();
-        }
-
-    }
 }

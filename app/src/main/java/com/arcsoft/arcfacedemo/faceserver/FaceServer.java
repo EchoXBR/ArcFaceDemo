@@ -3,9 +3,11 @@ package com.arcsoft.arcfacedemo.faceserver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ColorSpace;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
+import android.os.Environment;
 import android.util.Log;
 
 import com.arcsoft.arcfacedemo.model.FaceRegisterInfo;
@@ -240,6 +242,7 @@ public class FaceServer {
             try {
                 //保存注册结果（注册图、特征数据）
                 if (code == ErrorInfo.MOK) {
+                    // TODO  看下格式
                     YuvImage yuvImage = new YuvImage(nv21, ImageFormat.NV21, width, height, null);
                     //为了美观，扩大rect截取注册图
                     Rect cropRect = getBestRect(width, height, faceInfo.getRect());
@@ -299,6 +302,8 @@ public class FaceServer {
         }
 
     }
+
+
 
     /**
      * 用于注册照片人脸

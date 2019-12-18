@@ -9,12 +9,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.arcsoft.arcfacedemo.R;
 import com.arcsoft.arcfacedemo.common.Constants;
 import com.arcsoft.arcfacedemo.util.ConfigUtil;
+import com.arcsoft.arcfacedemo.util.ProgressDialogUtils;
 import com.arcsoft.face.ActiveFileInfo;
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
@@ -65,7 +65,7 @@ public class ActiveEngineAct extends Activity {
     private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
     private static final String TAG = "ActiveEngineAct";
     Toast toast;
-    ProgressBar progressBar;
+
     private FaceEngine faceEngine = new FaceEngine();
 
     @Override
@@ -73,8 +73,7 @@ public class ActiveEngineAct extends Activity {
         super.onCreate(savedInstanceState);
         //        setContentView(R.layout.activity_choose_function);
         //        initView();
-        progressBar = new ProgressBar(this);
-        progressBar.setVisibility(View.VISIBLE);
+        ProgressDialogUtils.showProgressDialog(this,"首次激活，请联网，耐心等待");
         activeEngine();
     }
 
@@ -114,7 +113,7 @@ public class ActiveEngineAct extends Activity {
 
                     @Override
                     public void onNext(Integer activeCode) {
-                        progressBar.setVisibility(View.GONE);
+                        ProgressDialogUtils.dismissProgressDialog();
                         if (activeCode == ErrorInfo.MOK) {
                             showToast(getString(R.string.active_success));
                             startTest();
@@ -137,6 +136,8 @@ public class ActiveEngineAct extends Activity {
 
                     @Override
                     public void onError(Throwable e) {
+                        ProgressDialogUtils.dismissProgressDialog();
+                        Toast.makeText(ActiveEngineAct.this,e.getMessage(),Toast.LENGTH_LONG).show();
                         e.printStackTrace();
                     }
 
@@ -153,6 +154,7 @@ public class ActiveEngineAct extends Activity {
     private void startTest() {
 
         ConfigUtil.setFtOrient(ActiveEngineAct.this, FaceEngine.ASF_OP_0_HIGHER_EXT);
+//        startActivity(new Intent(ActiveEngineAct.this, RegisterAndRecognizeActivity.class));
         startActivity(new Intent(ActiveEngineAct.this, UsbCameraRegisterAndRecognizeActivity.class));
         finish();
     }
