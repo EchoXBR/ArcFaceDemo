@@ -26,7 +26,6 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.arcsoft.arcfacedemo.R;
-import com.arcsoft.arcfacedemo.common.Constants;
 import com.arcsoft.arcfacedemo.faceserver.CompareResult;
 import com.arcsoft.arcfacedemo.faceserver.FaceServer;
 import com.arcsoft.arcfacedemo.model.DrawInfo;
@@ -43,7 +42,6 @@ import com.arcsoft.arcfacedemo.util.face.RequestFeatureStatus;
 import com.arcsoft.arcfacedemo.util.face.RequestLivenessStatus;
 import com.arcsoft.arcfacedemo.widget.FaceRectView;
 import com.arcsoft.arcfacedemo.widget.FaceSearchResultAdapter;
-import com.arcsoft.face.ActiveFileInfo;
 import com.arcsoft.face.AgeInfo;
 import com.arcsoft.face.ErrorInfo;
 import com.arcsoft.face.FaceEngine;
@@ -51,7 +49,6 @@ import com.arcsoft.face.FaceFeature;
 import com.arcsoft.face.GenderInfo;
 import com.arcsoft.face.LivenessInfo;
 import com.arcsoft.face.VersionInfo;
-import com.serenegiant.widget.UVCCameraTextureView;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -172,7 +169,6 @@ public class RegisterAndRecognizeActivity extends AppCompatActivity implements V
         FaceServer.getInstance().init(this);
 
         initView();
-
 
 
     }
@@ -422,8 +418,10 @@ public class RegisterAndRecognizeActivity extends AppCompatActivity implements V
             public void onCameraOpened(Camera camera, int cameraId, int displayOrientation, boolean isMirror) {
                 Camera.Size lastPreviewSize = previewSize;
                 previewSize = camera.getParameters().getPreviewSize();
+                //864 480 720 1440
                 drawHelper = new DrawHelper(previewSize.width, previewSize.height, previewView.getWidth(), previewView.getHeight(), displayOrientation
                         , cameraId, isMirror, false, false);
+                Log.i(TAG, "DrawHelper: " + previewSize.width + " " + previewSize.height + " " + previewView.getWidth() + " " + previewView.getHeight());
                 Log.i(TAG, "onCameraOpened: " + drawHelper.toString());
                 // 切换相机的时候可能会导致预览尺寸发生变化
                 if (faceHelper == null ||

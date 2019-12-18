@@ -114,14 +114,16 @@ public class DrawHelper {
                     + ","
                     + (drawInfo.getLiveness() == LivenessInfo.ALIVE ? "ALIVE" : (drawInfo.getLiveness() == LivenessInfo.NOT_ALIVE ? "NOT_ALIVE" : "UNKNOWN"));
             canvas.drawText(str, rect.left, rect.top - 10, paint);
-            Log.d(TAG, "draw" + str);
+            Log.d(TAG, "Rect draw" + str);
         } else {
             paint.setStyle(Paint.Style.FILL_AND_STROKE);
             paint.setTextSize(rect.width() / 8);
             canvas.drawText(drawInfo.getName(), rect.left, rect.top - 10, paint);
-            Log.d(TAG, "draw drawInfo.getName()" + drawInfo.getName());
+            Log.d(TAG, "Rect draw drawInfo.getName()" + drawInfo.getName());
         }
     }
+
+
 
     public void draw(FaceRectView faceRectView, List<DrawInfo> drawInfoList) {
         if (faceRectView == null) {
@@ -169,6 +171,8 @@ public class DrawHelper {
             horizontalRatio = (float) canvasHeight / (float) previewWidth;
             verticalRatio = (float) canvasWidth / (float) previewHeight;
         }
+        Log.d(TAG, rect.toString());
+        Log.d(TAG, horizontalRatio + " " + verticalRatio);
         rect.left *= horizontalRatio;
         rect.right *= horizontalRatio;
         rect.top *= verticalRatio;
@@ -245,6 +249,8 @@ public class DrawHelper {
             newRect.top = canvasHeight - bottom;
             newRect.bottom = canvasHeight - top;
         }
+
+        Log.d(TAG, newRect.toString());
         return newRect;
     }
 

@@ -480,6 +480,7 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
         mHandlerFirst = UVCCameraHandler.createHandler(this, mUVCCameraViewFirst
                 , 1, DEFAULT_PREVIEW_WIDTH, DEFAULT_PREVIEW_HEIGHT, UVCCamera.FRAME_FORMAT_MJPEG
                 , BANDWIDTH_FACTORS[0], firstDataCallBack);
+        Log.i(TAG, "initFaceHelper: initCamera" + mHandlerFirst.getWidth() + " " + mHandlerFirst.getHeight() + faceRectView.getWidth() + " " + faceRectView.getHeight());
 
         mHandlerFirst.addCallback(new UVCCameraHandler.CameraCallback() {
             @Override
@@ -656,9 +657,11 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
 
     private void initFaceHelper(Integer trackedFaceCount) {
 
-        drawHelper = new DrawHelper(DEFAULT_PREVIEW_WIDTH, DEFAULT_PREVIEW_HEIGHT, getWindowManager().getDefaultDisplay().getWidth(), getWindowManager().getDefaultDisplay().getHeight(), 0
+        //864 480 720 1440
+        drawHelper = new DrawHelper(mHandlerFirst.getWidth(), mHandlerFirst.getHeight(), 800, 600, 0
+                //        drawHelper = new DrawHelper(DEFAULT_PREVIEW_WIDTH, DEFAULT_PREVIEW_HEIGHT, faceRectView.getWidth(), faceRectView.getHeight(), 0
                 , 0, false, false, false);
-        Log.i(TAG, "initFaceHelper: ");
+        Log.i(TAG, "initFaceHelper: " + mHandlerFirst.getWidth() + " " + mHandlerFirst.getHeight() + faceRectView.getWidth() + " " + faceRectView.getHeight());
         // 记录切换时的人脸序号
         if (faceHelper != null) {
             trackedFaceCount = faceHelper.getTrackedFaceCount();
@@ -826,7 +829,6 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
                         CompareResult compareResult = FaceServer.getInstance().getTopOfFaceLib(frFace);
                         Log.i(TAG, "subscribe: fr search end = " + System.currentTimeMillis() + " trackId = " + requestId);
                         emitter.onNext(compareResult);
-
                     }
                 })
                 .subscribeOn(Schedulers.computation())

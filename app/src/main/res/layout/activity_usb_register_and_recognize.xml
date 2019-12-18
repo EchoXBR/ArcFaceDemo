@@ -6,16 +6,17 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <com.arcsoft.arcfacedemo.widget.FaceRectView
-            android:id="@+id/single_camera_face_rect_view"
-            android:layout_width="400dp"
-            android:layout_height="300dp" />
+
 
         <com.serenegiant.widget.UVCCameraTextureView
             android:id="@+id/camera_view_first"
             android:layout_width="400dp"
+            android:layout_height="300dp" />
+        <com.arcsoft.arcfacedemo.widget.FaceRectView
+            android:id="@+id/single_camera_face_rect_view"
+            android:layout_width="match_parent"
             android:layout_height="300dp" />
     </FrameLayout>
 
