@@ -1,7 +1,6 @@
 package com.arcsoft.arcfacedemo.activity;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
@@ -12,7 +11,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -76,8 +74,9 @@ import io.reactivex.schedulers.Schedulers;
 import static com.arcsoft.arcfacedemo.util.face.FaceHelper.DEFAULT_PREVIEW_HEIGHT;
 import static com.arcsoft.arcfacedemo.util.face.FaceHelper.DEFAULT_PREVIEW_WIDTH;
 
-
-//ViewTreeObserver.OnGlobalLayoutListener,
+/**
+ * UVC 摄像头+人脸注册识别
+ */
 public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity implements CameraDialog.CameraDialogParent {
 
     private static final String TAG = "UsbCameraAct";
@@ -118,8 +117,12 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
     };
     private static final float[] BANDWIDTH_FACTORS = {0.5f, 0.5f};
     int previewCount = 0;
+    //    姓名
     EditText editName;
+    //    身份证号码
+    EditText editIdCardNo;
     SurfaceTexture st;
+    String idCardNo = "";
     private DrawHelper drawHelper;
     /**
      * VIDEO模式人脸检测引擎，用于预览帧人脸追踪
@@ -339,6 +342,8 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
         }
     };
     private String registerName = "";
+
+
     /**
      * USB 相机数据回调
      */
@@ -346,17 +351,17 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
         @Override
         public void getData(byte[] nv21) {
             Log.v(TAG, "数据回调:" + nv21.length);
-            previewCount++;
-            if (previewCount % 2 == 1) {
-                if (previewCount > 2048) {
-                    previewCount = 0;
-                }
-                return;
-            }
-            if (faceRectView != null) {
-                faceRectView.clearFaceInfo();
-                Log.v(TAG, "faceRectView.clearFaceInfo");
-            }
+            //            previewCount++;
+            //            if (previewCount % 2 == 1) {
+            //                if (previewCount > 2048) {
+            //                    previewCount = 0;
+            //                }
+            //                return;
+            //            }
+            //            if (faceRectView != null) {
+            //                faceRectView.clearFaceInfo();
+            //                Log.v(TAG, "faceRectView.clearFaceInfo");
+            //            }
             List<FacePreviewInfo> facePreviewInfoList = faceHelper.onPreviewFrame(nv21);
             if (facePreviewInfoList != null && faceRectView != null && drawHelper != null) {
 
@@ -422,7 +427,6 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
         initView();
         initCamera();
         initEngine();
-
     }
 
     @Override
@@ -536,6 +540,7 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
             }
         });
         editName = findViewById(R.id.edv_name);
+        editIdCardNo = findViewById(R.id.edv_id);
         RecyclerView recyclerShowFaceInfo = findViewById(R.id.single_camera_recycler_view_person);
         compareResultList = new ArrayList<>();
         adapter = new FaceSearchResultAdapter(compareResultList, this);
@@ -656,7 +661,6 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
     }
 
     private void initFaceHelper(Integer trackedFaceCount) {
-
         //864 480 720 1440
         drawHelper = new DrawHelper(mHandlerFirst.getWidth(), mHandlerFirst.getHeight(), 800, 600, 0
                 //        drawHelper = new DrawHelper(DEFAULT_PREVIEW_WIDTH, DEFAULT_PREVIEW_HEIGHT, faceRectView.getWidth(), faceRectView.getHeight(), 0
@@ -685,10 +689,10 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
             Observable.create(new ObservableOnSubscribe<Boolean>() {
                 @Override
                 public void subscribe(ObservableEmitter<Boolean> emitter) {
-                    boolean success = FaceServer.getInstance().registerNv21(UsbCameraRegisterAndRecognizeActivity.this, nv21.clone(), DEFAULT_PREVIEW_WIDTH, DEFAULT_PREVIEW_HEIGHT,
-                            facePreviewInfoList.get(0).getFaceInfo(), registerName);
+                    boolean success = FaceServer.getInstance().registerNv12(UsbCameraRegisterAndRecognizeActivity.this, nv21.clone(), DEFAULT_PREVIEW_WIDTH, DEFAULT_PREVIEW_HEIGHT,
+                            facePreviewInfoList.get(0).getFaceInfo(), registerName + "," + idCardNo);
                     //                            "registered " + faceHelper.getTrackedFaceCount());
-                    Log.d(TAG, "registerNv21 " + success);
+                    Log.d(TAG, "registerNv12 " + success);
                     emitter.onNext(success);
                 }
             })
@@ -705,6 +709,7 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
                             String result = success ? "register success!" : "register failed!";
                             Toast.makeText(UsbCameraRegisterAndRecognizeActivity.this, result, Toast.LENGTH_SHORT).show();
                             registerStatus = REGISTER_STATUS_DONE;
+                            editIdCardNo.setText("");
                         }
 
                         @Override
@@ -727,9 +732,10 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
         List<DrawInfo> drawInfoList = new ArrayList<>();
         for (int i = 0; i < facePreviewInfoList.size(); i++) {
             //TODO 此处可以获取更多注册信息
-            String name = faceHelper.getName(facePreviewInfoList.get(i).getTrackId());
-            Integer liveness = livenessMap.get(facePreviewInfoList.get(i).getTrackId());
-            Integer recognizeStatus = requestFeatureStatusMap.get(facePreviewInfoList.get(i).getTrackId());
+            FacePreviewInfo facePreviewInfo = facePreviewInfoList.get(i);
+            String name = faceHelper.getName(facePreviewInfo.getTrackId());
+            Integer liveness = livenessMap.get(facePreviewInfo.getTrackId());
+            Integer recognizeStatus = requestFeatureStatusMap.get(facePreviewInfo.getTrackId());
             //            Log.i(TAG, "name: " + name + " liveness " + liveness + " recognizeStatus " + recognizeStatus);
             // 根据识别结果和活体结果设置颜色
             int color = RecognizeColor.COLOR_UNKNOWN;
@@ -745,14 +751,13 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
                 color = RecognizeColor.COLOR_FAILED;
             }
 
-            Rect rect = facePreviewInfoList.get(i).getFaceInfo().getRect();
+            Rect rect = facePreviewInfo.getFaceInfo().getRect();
             if (rect != null) {
                 drawInfoList.add(new DrawInfo(drawHelper.adjustRect(rect),
                         GenderInfo.UNKNOWN, AgeInfo.UNKNOWN_AGE, liveness == null ? LivenessInfo.UNKNOWN : liveness, color,
-                        name == null ? String.valueOf(facePreviewInfoList.get(i).getTrackId()) : name));
+                        name == null ? String.valueOf(facePreviewInfo.getTrackId()) : name));
             } else {
                 Log.e(TAG, "rect = null");
-
             }
         }
         drawHelper.draw(faceRectView, drawInfoList);
@@ -782,14 +787,20 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
      *         人脸和trackId列表
      */
     private void clearLeftFace(List<FacePreviewInfo> facePreviewInfoList) {
-
         if (compareResultList != null) {
-            for (int i = compareResultList.size() - 1; i >= 0; i--) {
-                if (!requestFeatureStatusMap.containsKey(compareResultList.get(i).getTrackId())) {
-                    compareResultList.remove(i);
-                    adapter.notifyItemRemoved(i);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = compareResultList.size() - 1; i >= 0; i--) {
+                        if (!requestFeatureStatusMap.containsKey(compareResultList.get(i).getTrackId())) {
+                            compareResultList.remove(i);
+                            Log.d(TAG, "compareResultList.remove(i)" +i);
+                            adapter.notifyItemRemoved(i);
+                        }
+                    }
                 }
-            }
+            });
+
         }
         if (facePreviewInfoList == null || facePreviewInfoList.size() == 0) {
             requestFeatureStatusMap.clear();
@@ -799,6 +810,7 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
             if (getFeatureDelayedDisposables != null) {
                 getFeatureDelayedDisposables.clear();
             }
+
             return;
         }
         Enumeration<Integer> keys = requestFeatureStatusMap.keys();
@@ -874,7 +886,6 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
                             }
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
                             faceHelper.setName(requestId, getString(R.string.recognize_success_notice, compareResult.getUserName()));
-
                         } else {
                             faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                             retryRecognizeDelayed(requestId);
@@ -919,18 +930,6 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
         }
     }
 
-    /**
-     * 在{@link #}第一次布局完成后，去除该监听，并且进行引擎和相机的初始化
-     */
-    //    @Override
-    //    public void onGlobalLayout() {
-    //        if (!checkPermissions(NEEDED_PERMISSIONS)) {
-    //            ActivityCompat.requestPermissions(this, NEEDED_PERMISSIONS, ACTION_REQUEST_PERMISSIONS);
-    //        } else {
-    //            initEngine();
-    //            initCamera();
-    //        }
-    //    }
 
     /**
      * 将map中key对应的value增1回传
@@ -1043,6 +1042,5 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
 
         }
     }
-
 
 }

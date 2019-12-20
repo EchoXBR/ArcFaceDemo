@@ -10,7 +10,7 @@ public class DrawInfo {
     private int color;
     private String name = null;
 
-    public DrawInfo(Rect rect, int sex, int age,int liveness,int color,String name) {
+    public DrawInfo(Rect rect, int sex, int age, int liveness, int color, String name) {
         this.rect = rect;
         this.sex = sex;
         this.age = age;

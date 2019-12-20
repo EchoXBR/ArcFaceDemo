@@ -24,10 +24,31 @@ android {
             abiFilters 'armeabi-v7a'
         }
     }
+    signingConfigs {
+        release {
+            try {
+                storeFile file("../keystore/platform.jks")
+                storePassword "android"
+                keyAlias "platform"
+                keyPassword "android"
+            } catch (ex) {
+                throw new InvalidUserDataException(ex.toString())
+            }
+        }
+
+    }
     buildTypes {
         release {
+            buildConfigField "boolean", "LOG_DEBUG", "false"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            signingConfig signingConfigs.release
         }
     }
 }
@@ -43,6 +64,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.1.16'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    implementation 'com.github.XBRSpeedata:UvcCameraDemo:1.0.4'
+    implementation 'com.github.XBRSpeedata:UvcCameraDemo:1.0.5'
     implementation 'com.serenegiant:common:2.12.4'
 }

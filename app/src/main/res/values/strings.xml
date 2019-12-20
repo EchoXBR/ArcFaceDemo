@@ -78,6 +78,7 @@
     <string name="batch_process_processing_please_wait">process start,please wait</string>
     <string name="batch_process_finished_info">process finished!\ntotal count =  %d \nsuccess count = %d \nfailed count = %d \nfailed images are in directory \' %s \'</string>
     <string name="input_name">请输入注册姓名</string>
+    <string name="input_id">请输入身份证号码</string>
 
 
 </resources>

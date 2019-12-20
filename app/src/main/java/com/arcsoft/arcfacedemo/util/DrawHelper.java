@@ -118,6 +118,11 @@ public class DrawHelper {
         } else {
             paint.setStyle(Paint.Style.FILL_AND_STROKE);
             paint.setTextSize(rect.width() / 8);
+//            String str = (drawInfo.getSex() == GenderInfo.MALE ? " 男" : (drawInfo.getSex() == GenderInfo.FEMALE ? "女" : "UNKNOWN"))
+//                    + ","
+//                    + (drawInfo.getAge() == AgeInfo.UNKNOWN_AGE ? "UNKNWON" : drawInfo.getAge())
+//                    + ","
+//                    + (drawInfo.getLiveness() == LivenessInfo.ALIVE ? "ALIVE" : (drawInfo.getLiveness() == LivenessInfo.NOT_ALIVE ? "NOT_ALIVE" : "UNKNOWN"));
             canvas.drawText(drawInfo.getName(), rect.left, rect.top - 10, paint);
             Log.d(TAG, "Rect draw drawInfo.getName()" + drawInfo.getName());
         }

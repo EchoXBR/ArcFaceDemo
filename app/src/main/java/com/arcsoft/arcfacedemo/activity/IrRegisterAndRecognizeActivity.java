@@ -747,7 +747,7 @@ public class IrRegisterAndRecognizeActivity extends AppCompatActivity implements
             Observable.create(new ObservableOnSubscribe<Boolean>() {
                 @Override
                 public void subscribe(ObservableEmitter<Boolean> emitter) {
-                    boolean success = FaceServer.getInstance().registerNv21(
+                    boolean success = FaceServer.getInstance().registerNv12(
                             IrRegisterAndRecognizeActivity.this, nv21Rgb,
                             previewSize.width, previewSize.height, facePreviewInfoList.get(0).getFaceInfo(), "registered " + faceHelperIr.getTrackedFaceCount());
                     emitter.onNext(success);

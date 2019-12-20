@@ -9,16 +9,33 @@
         android:layout_height="match_parent">
 
 
-
         <com.serenegiant.widget.UVCCameraTextureView
             android:id="@+id/camera_view_first"
             android:layout_width="400dp"
             android:layout_height="300dp" />
+
         <com.arcsoft.arcfacedemo.widget.FaceRectView
             android:id="@+id/single_camera_face_rect_view"
             android:layout_width="match_parent"
             android:layout_height="300dp" />
     </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="400dp">
+        <EditText
+            android:id="@+id/edv_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/input_name" />
+        <EditText
+            android:id="@+id/edv_id"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/input_id" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -37,14 +54,6 @@
             android:onClick="register"
             android:text="@string/register" />
 
-        <EditText
-            android:id="@+id/edv_name"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:visibility="gone"
-            android:focusable="false"
-            android:hint="@string/input_name" />
 
         <Switch
             android:id="@+id/single_camera_switch_liveness_detect"
