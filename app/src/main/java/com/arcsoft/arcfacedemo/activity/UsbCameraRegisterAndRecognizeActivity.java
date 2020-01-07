@@ -106,7 +106,7 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
      */
     private static final int REGISTER_STATUS_DONE = 2;
     private static final int ACTION_REQUEST_PERMISSIONS = 0x001;
-    private static final float SIMILAR_THRESHOLD = 0.8F;
+    private static final float SIMILAR_THRESHOLD = 0.7F;
     /**
      * 所需的所有权限信息
      */
@@ -662,7 +662,8 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
 
     private void initFaceHelper(Integer trackedFaceCount) {
         //864 480 720 1440
-        drawHelper = new DrawHelper(mHandlerFirst.getWidth(), mHandlerFirst.getHeight(), 800, 600, 0
+        //        800 600
+        drawHelper = new DrawHelper(mHandlerFirst.getWidth(), mHandlerFirst.getHeight(), getWindowManager().getDefaultDisplay().getWidth(), 2 * getWindowManager().getDefaultDisplay().getHeight() / 5, 0
                 //        drawHelper = new DrawHelper(DEFAULT_PREVIEW_WIDTH, DEFAULT_PREVIEW_HEIGHT, faceRectView.getWidth(), faceRectView.getHeight(), 0
                 , 0, false, false, false);
         Log.i(TAG, "initFaceHelper: " + mHandlerFirst.getWidth() + " " + mHandlerFirst.getHeight() + faceRectView.getWidth() + " " + faceRectView.getHeight());
@@ -794,7 +795,7 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
                     for (int i = compareResultList.size() - 1; i >= 0; i--) {
                         if (!requestFeatureStatusMap.containsKey(compareResultList.get(i).getTrackId())) {
                             compareResultList.remove(i);
-                            Log.d(TAG, "compareResultList.remove(i)" +i);
+                            Log.d(TAG, "compareResultList.remove(i)" + i);
                             adapter.notifyItemRemoved(i);
                         }
                     }
@@ -884,9 +885,12 @@ public class UsbCameraRegisterAndRecognizeActivity extends AppCompatActivity imp
                                 compareResultList.add(compareResult);
                                 adapter.notifyItemInserted(compareResultList.size() - 1);
                             }
+                            Log.d(TAG, "Similar==" + compareResult.getSimilar());
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.SUCCEED);
                             faceHelper.setName(requestId, getString(R.string.recognize_success_notice, compareResult.getUserName()));
+
                         } else {
+                            Log.d(TAG, "Similar==" + compareResult.getSimilar());
                             faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                             retryRecognizeDelayed(requestId);
                         }

@@ -3,7 +3,7 @@
     package="com.arcsoft.arcfacedemo">
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -18,14 +18,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".activity.MenuActivity"></activity>
+        <activity android:name=".activity.IdCardRegisterActivity" />
         <activity
             android:name=".activity.FaceAttrPreviewActivity"
             android:launchMode="singleTop" />
         <activity
             android:name=".activity.ChooseFunctionActivity"
-            android:launchMode="singleTop">
-
-        </activity>
+            android:launchMode="singleTop" />
         <activity
             android:name=".activity.ActiveEngineAct"
             android:launchMode="singleTop">
@@ -34,35 +34,23 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".activity.SingleImageActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop" />
-
         <activity
             android:name=".activity.MultiImageActivity"
             android:launchMode="singleTop" />
-
         <activity
             android:name=".activity.IrRegisterAndRecognizeActivity"
             android:launchMode="singleTop" />
-
         <activity
             android:name=".activity.RegisterAndRecognizeActivity"
-            android:launchMode="singleTop" >
-
-        </activity>
-
+            android:launchMode="singleTop" />
         <activity
             android:name=".activity.UsbCameraRegisterAndRecognizeActivity"
-            android:launchMode="singleTop" >
-
-        </activity>
-
-
+            android:launchMode="singleTop" />
         <activity
             android:name=".activity.FaceManageActivity"
             android:launchMode="singleTop" />
@@ -76,7 +64,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
     </application>
 
 </manifest>

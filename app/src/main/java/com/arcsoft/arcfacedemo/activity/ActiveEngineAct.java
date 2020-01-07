@@ -155,7 +155,7 @@ public class ActiveEngineAct extends Activity {
 
         ConfigUtil.setFtOrient(ActiveEngineAct.this, FaceEngine.ASF_OP_0_HIGHER_EXT);
 //        startActivity(new Intent(ActiveEngineAct.this, RegisterAndRecognizeActivity.class));
-        startActivity(new Intent(ActiveEngineAct.this, UsbCameraRegisterAndRecognizeActivity.class));
+        startActivity(new Intent(ActiveEngineAct.this, MenuActivity.class));
         finish();
     }
 
